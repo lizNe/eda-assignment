@@ -68,6 +68,7 @@ export class EDAAppStack extends cdk.Stack {
         timeout: cdk.Duration.seconds(15),
         memorySize: 128,
         environment: {
+          QUEUE_URL: DLQQueue.queueUrl,
           TABLE_NAME: imagesTable.tableName,
           REGION: "eu-west-1",
         },
@@ -132,6 +133,9 @@ export class EDAAppStack extends cdk.Stack {
     // Permissions
     imagesTable.grantReadWriteData(processImageFn)
     imagesBucket.grantRead(processImageFn);
+    DLQQueue.grantSendMessages(processImageFn);
+
+
 
     mailerFn.addToRolePolicy(
       new iam.PolicyStatement({
